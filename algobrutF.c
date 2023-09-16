@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-/*On part du prrinicipe qu'on a pas de pièce 0000 ou 1111*/
+/*On part du prrinicipe qu'on a pas de pièce 00000 ou 11111*/
 
 /**
  * @struct carre
@@ -109,18 +109,18 @@ uint8_t compatible_fa_fa(uint8_t a_list[], carre* face){
         if (compatible_bo_bo(face->line_tp, a_list[i%4]) ==1 
             && compatible_bo_bo(face->line_rt, a_list[(i+1)%4]) ==1){
             // le xor entre 3 bord 
-            if ((face->line_tp & 1) ^ (a_list[i%4] & 1) ^ ((a_list[(i+1)%4])>>3)){
+            if ((face->line_tp & 1) ^ (a_list[i%4] & 1) ^ ((a_list[(i+1)%4])>>4)){
                 if (compatible_bo_bo(face->line_bo, a_list[(i+2)%4]) == 1 
                     && compatible_bo_bo(face->line_lf, a_list[(i+3)%4]) == 1){
                     // le xor entre 3 bord 
-                    if ((face->line_lf & 1) ^ (a_list[(i+3)%4] & 1) ^ ((a_list[(i+2)%4])>>3)){
+                    if ((face->line_lf & 1) ^ (a_list[(i+3)%4] & 1) ^ ((a_list[(i+2)%4])>>4)){
                         return a_list[(i+3)%4];
                     }
                 }
             }
         }
     }
-    return 0; //  si on part du principe q'on a pas de piece 0000
+    return 0; //  si on part du principe q'on a pas de piece 00000
 }
 
 void verif_two_last_piece(carre* face, carre *list_two_faces[], uint8_t nbelem_list){
@@ -152,6 +152,8 @@ void verif_two_last_piece(carre* face, carre *list_two_faces[], uint8_t nbelem_l
                 tourne_carre(&list_two_faces[(i+1)%2],val1);
                 face->suivant = list_two_faces[i];
                 list_two_faces[i]->precedent = face;
+
+                // le return ou exit | affichage 
             } 
 
         }
