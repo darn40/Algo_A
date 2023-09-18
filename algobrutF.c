@@ -4,23 +4,31 @@
 #include <stdbool.h>
 
 /*On part du prrinicipe qu'on a pas de pièce 00000 ou 11111*/
+/* Un peu trop de 4 un peu partout, rendre portable pour un carré à n face*/
+
+
+/*
+    L'étude de laa complexité peut porter  sur le nombre de bord, 
+    ou le nombre de piece,
+    une complexité sur la taille des faces me paraît un peu inutil parce qu'une vérification dans notre manière de faire est sûrement linéaire  
+*/
 
 /**
  * @struct carre
  * @brief structure d'une pièce du puzzle,
  * les bords sont des binaires
  */
-struct carre
+typedef struct 
 {
     uint8_t line_tp; /* bord du haut */
     uint8_t line_rt; /* bord de droite */
     uint8_t line_bo; /* bord du bas */
     uint8_t line_lf; /* bord de gauche */
     char nom;
-    carre *suivant;
-    carre *precedent; // ne pas oublier d'inialiser à null
     bool reverse; // initialiser à false //pas encore traité
-}typedef carre;
+    struct carre *suivant;
+    struct carre *precedent; // ne pas oublier d'initialiser à null
+}carre;
 
 
 
@@ -67,16 +75,16 @@ void tourne_carre(carre** face, bord new_left){
  * @return uint8_t 
  */
 uint8_t compatible_bo_bo(uint8_t bord1, uint8_t bord2){
-    if (bord1 + bord2 == 0b01110 
-        | bord1 + bord2 == 0b11110 
-        | bord1 + bord2 == 0b01111 
-        | bord1 + bord2 == 0b11111) return 1; 
+    if (bord1 ^ bord2 == 0b01110 
+        | bord1 ^ bord2 == 0b11110 
+        | bord1 ^ bord2 == 0b01111 
+        | bord1 ^ bord2 == 0b11111) return 1; 
 
     else return 0;
 }
 
 /**
- * @brief vérifie si un a des compatibilité à un carré sous forme de bit  de 4 bit
+ * @brief vérifie si un bord a des compatibilité avec un carré sous forme de 4 bord de 5 bit  
  * 
  * @param bord 
  * @param face 
@@ -108,7 +116,7 @@ uint8_t compatible_fa_fa(uint8_t a_list[], carre* face){
     for (uint8_t i = 0; i < 4; i++){
         if (compatible_bo_bo(face->line_tp, a_list[i%4]) ==1 
             && compatible_bo_bo(face->line_rt, a_list[(i+1)%4]) ==1){
-            // le xor entre 3 bord 
+            // le xor entre 3 bords
             if ((face->line_tp & 1) ^ (a_list[i%4] & 1) ^ ((a_list[(i+1)%4])>>4)){
                 if (compatible_bo_bo(face->line_bo, a_list[(i+2)%4]) == 1 
                     && compatible_bo_bo(face->line_lf, a_list[(i+3)%4]) == 1){
@@ -124,7 +132,7 @@ uint8_t compatible_fa_fa(uint8_t a_list[], carre* face){
 }
 
 void verif_two_last_piece(carre* face, carre *list_two_faces[], uint8_t nbelem_list){
-    if (nbelem_list != 2){print(nbelem_list + "verif two last piece"); exit(-1);}
+    if (nbelem_list != 2){printf(nbelem_list + "verif two last piece"); exit(-1);}
 
     uint8_t list_tp_borders[4];
     uint8_t list_bo_borders[4];
@@ -133,6 +141,7 @@ void verif_two_last_piece(carre* face, carre *list_two_faces[], uint8_t nbelem_l
     while (face->precedent != NULL){
         list_tp_borders[compt] = face->line_tp;
         list_bo_borders[compt] = face->line_bo;
+        compt++;
     }
 
     // reste à comparer les deux dernière face restantes
@@ -154,6 +163,9 @@ void verif_two_last_piece(carre* face, carre *list_two_faces[], uint8_t nbelem_l
                 list_two_faces[i]->precedent = face;
 
                 // le return ou exit | affichage 
+                printf("\n********************il y a une solution ****************************\n");
+                printf("\n \n");
+                                
             } 
 
         }
@@ -163,7 +175,7 @@ void verif_two_last_piece(carre* face, carre *list_two_faces[], uint8_t nbelem_l
 
 //les carrés ont un nom faire un recursif qi print les noms à la fin 
 /**
- * @brief 
+ * @brief fonction secondaire recursive de recherche d'une solution
  * 
  * @param face la pièce considérée du puzzle
  * @param list_face liste des faces pas encore placées
@@ -173,7 +185,7 @@ void verif_two_last_piece(carre* face, carre *list_two_faces[], uint8_t nbelem_l
 void recherche_intermediaire(carre *face, carre *list_face[], uint8_t nbelem_list){
     if (nbelem_list >=3){
         for (uint8_t i=0; i<nbelem_list; i++){
-            uint8_t res = compatible_bo_fa(list_face[0]->line_rt, list_face[i]);
+            uint8_t res = compatible_bo_fa(face, list_face[i]);
             
             if (res != 0){
                 face->suivant = list_face[i];
@@ -185,7 +197,7 @@ void recherche_intermediaire(carre *face, carre *list_face[], uint8_t nbelem_lis
                     if(list_face[z]->nom != list_face[i]->nom){new_list[compt] = list_face[z]; compt++;}
                 
                 for (int8_t k = 3; k > -1; k--){
-                    if (res & 0b0001 == 1){ /*postion des bitsdans res, respectivement, top right bottom left*/
+                    if (res & 0b0001 == 1){ /*postion des bit dans res, respectivement, top right bottom left*/
 
                         /* tourner le carré si nécessaire*/
                         tourne_carre(&list_face[i], k);
@@ -199,11 +211,30 @@ void recherche_intermediaire(carre *face, carre *list_face[], uint8_t nbelem_lis
     }
 
     else{
-        
+        verif_two_last_piece(face, list_face, nbelem_list);
     }
 }
 
+/**
+ * @brief fonction principale de recherche d'une solution
+ * 
+ * @param list_face liste des faces pas encore placées
+ * @param nbelem_list la taille de list_face
+ * @return carre* 
+ */
+carre* recherche_solution(carre* liste_face[], uint8_t nbelem_list){
+    carre *new_list[nbelem_list-1];
+    uint8_t compt = 0;
+    for (uint8_t z = 0; z < nbelem_list; z++)
+        if(liste_face[z]->nom != liste_face[0]->nom){new_list[compt] = liste_face[z]; compt++;}
+    
+    recherche_intermediaire(liste_face[0], new_list, nbelem_list-1);
+    
+    printf("\n********************il n'y a pas de solution ****************************\n");
+    return 0;
+}
 
-carre* recherche_solution(carre liste_face[6]){
+int main(){
+    printf("hello\n");
     return 0;
 }
