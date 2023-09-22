@@ -14,18 +14,6 @@
     une complexité sur la taille des faces me paraît un peu inutil parce qu'une vérification dans notre manière de faire est sûrement linéaire  
 */
 
-void reverse_face(struct carre** face){
-    uint8_t tab[] = {(*face)->line_tp, 
-                    reverse_bord((*face)->line_rt), 
-                    (*face)->line_bo, 
-                    reverse_bord((*face)->line_lf)};
-    
-    (*face)->line_tp = tab[2]; 
-    (*face)->line_rt = tab[1];
-    (*face)->line_bo = tab[0];
-    (*face)->line_lf = tab[3];
-}
-
 uint8_t reverse_bord(uint8_t bord){
     //printf("\nfblksfbvjkdbsm %u lclmdbsqlvmlfs\n", bord);
     uint8_t res = 0;
@@ -39,6 +27,18 @@ uint8_t reverse_bord(uint8_t bord){
     return res;
 }
 
+void reverse_face(struct carre** face){
+    uint8_t tab[] = {(*face)->line_tp, 
+                    reverse_bord((*face)->line_rt), 
+                    (*face)->line_bo, 
+                    reverse_bord((*face)->line_lf)};
+    
+    (*face)->line_tp = tab[2]; 
+    (*face)->line_rt = tab[1];
+    (*face)->line_bo = tab[0];
+    (*face)->line_lf = tab[3];
+}
+
 void tourne_carre(struct carre** face, bord new_left){
     uint8_t tab[] = {(*face)->line_tp, (*face)->line_rt, (*face)->line_bo, (*face)->line_lf};
     
@@ -47,7 +47,7 @@ void tourne_carre(struct carre** face, bord new_left){
     {
         case top:
             tab[0] = reverse_bord(tab[0]);
-            tab[2] = reverse_bord(tab[3]);
+            tab[2] = reverse_bord(tab[2]);
             val = -1;
             break;
         case right:
