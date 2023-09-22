@@ -14,6 +14,18 @@
     une complexité sur la taille des faces me paraît un peu inutil parce qu'une vérification dans notre manière de faire est sûrement linéaire  
 */
 
+void reverse_face(struct carre** face){
+    uint8_t tab[] = {(*face)->line_tp, 
+                    reverse_bord((*face)->line_rt), 
+                    (*face)->line_bo, 
+                    reverse_bord((*face)->line_lf)};
+    
+    (*face)->line_tp = tab[2]; 
+    (*face)->line_rt = tab[1];
+    (*face)->line_bo = tab[0];
+    (*face)->line_lf = tab[3];
+}
+
 uint8_t reverse_bord(uint8_t bord){
     //printf("\nfblksfbvjkdbsm %u lclmdbsqlvmlfs\n", bord);
     uint8_t res = 0;
@@ -75,7 +87,7 @@ uint8_t compatible_bo_bo(uint8_t bord1, uint8_t bord2){ // la comapaison n'est p
 uint8_t compatible_bo_fa(uint8_t bord, struct carre* face){
     // on renverse parce que ... voir exemple
     uint8_t tab[4] = {reverse_bord(face->line_tp), reverse_bord(face->line_rt), face->line_bo, face->line_lf};
-    printf("***********************************%i\n", face->nom);
+    //printf("***********************************%i\n", face->nom);
     uint8_t res = 0; 
     for (uint8_t i=0; i< 4; i++){
         /*if (bord + tab[i] == 0b01110 
@@ -91,30 +103,43 @@ uint8_t compatible_bo_fa(uint8_t bord, struct carre* face){
             res = res << 1;
         }
     }
-    printf("***********************************%u\n", res);
+    //printf("***********************************%u\n", res);
 
     return res;
 }
 
-uint8_t compatible_fa_fa(uint8_t a_list[], struct carre* face){ 
+uint8_t compatible_fa_fa(uint8_t a_list[], struct carre** face, bool reversed){ 
     // Il faut tourner la pièce si ça ne amrchera pas en général 
     // dans notre cas il 6,2 au premier(est -ce juste) if (2 eme itéraion) et échoue au 3 eme if 
     for (uint8_t i = 0; i < 4; i++){
-        if (compatible_bo_bo(face->line_tp, a_list[i%4]) ==1 
-            && compatible_bo_bo(face->line_rt, a_list[(i+1)%4]) ==1){
+        tourne_carre(face,(i+3)%4);
+        if (compatible_bo_bo((*face)->line_lf, a_list[3]) ==1 
+            && compatible_bo_bo((*face)->line_bo, a_list[2]) ==1){
+            
             // le xor entre 3 bords
-            if ((face->line_tp & 1) ^ (a_list[i%4] & 1) ^ ((a_list[(i+1)%4])>>4)){
-                if (compatible_bo_bo(face->line_bo, a_list[(i+2)%4]) == 1 
-                    && compatible_bo_bo(face->line_lf, a_list[(i+3)%4]) == 1){
+            if (((*face)->line_lf & 1) ^ (a_list[3] & 1) ^ ((a_list[2])>>4)){
+                
+                if (compatible_bo_bo((*face)->line_rt, a_list[1]) == 1 
+                    && compatible_bo_bo((*face)->line_tp, a_list[0]) == 1){
+                    
                     // le xor entre 3 bord 
-                    if ((face->line_lf & 1) ^ (a_list[(i+3)%4] & 1) ^ ((a_list[(i+2)%4])>>4)){
-                        return a_list[(i+3)%4];
+                    if (((*face)->line_tp & 1) ^ (a_list[0] & 1) ^ ((a_list[1])>>4)){
+
+                        if((((*face)->line_tp >> 4) ^ (a_list[0] >> 4) ^ ((a_list[3])>>4))
+                            && (((*face)->line_rt & 1) ^ (a_list[2] & 1) ^ ((a_list[1]) & 1))
+                        )
+                        return a_list[3]; //transformer en bool
                     }
                 }
             }
         }
     }
-    return 0; //  si on part du principe q'on a pas de piece 00000
+    if(reversed == true){
+        return 0;
+    }
+    reverse_face(face);
+    printf("\nREVERSE  %u \n", (*face)->nom);
+    return compatible_fa_fa(a_list, face, true); //  si on part du principe q'on a pas de piece 00000
 }
 
 void verif_two_last_piece(struct carre* face, struct carre *list_two_faces[], uint8_t nbelem_list){ //revoir 
@@ -140,18 +165,18 @@ void verif_two_last_piece(struct carre* face, struct carre *list_two_faces[], ui
     // reste à comparer les deux dernière face restantes
 
     for(uint8_t i = 0; i < 2; i++){
-        uint8_t val1 = compatible_fa_fa(list_tp_borders, list_two_faces[i]); 
+        uint8_t val1 = compatible_fa_fa(list_tp_borders, &(list_two_faces[i]), false); 
         if(val1 != 0){
             /*tourne_carre(&list_two_faces[i],val1);
             face->suivant = list_two_faces[i];
             list_two_faces[i]->precedent = face;*/
-            uint8_t val2 = compatible_fa_fa(list_bo_borders, list_two_faces[(i+1)%2]);
+            uint8_t val2 = compatible_fa_fa(list_bo_borders, &(list_two_faces[(i+1)%2]), false);
             if(val2 !=0){
-                tourne_carre(&list_two_faces[i],val1);
+                //tourne_carre(&list_two_faces[i],val1);
                 face->suivant = list_two_faces[i];
                 list_two_faces[i]->precedent = face;
 
-                tourne_carre(&list_two_faces[(i+1)%2],val1);
+                //tourne_carre(&list_two_faces[(i+1)%2],val1);
                 list_two_faces[i]->suivant = list_two_faces[(i+1)%2];
                 list_two_faces[(i+1)%2]->precedent = list_two_faces[i];
 
@@ -207,6 +232,9 @@ void recherche_intermediaire(struct carre *face, struct carre *list_face[], uint
                         /* tourner le carré si nécessaire*/
                         tourne_carre(&list_face[i], k);
                         recherche_intermediaire(list_face[i], new_list, nbelem_list-1);
+                        reverse_face(&list_face[i]);
+                        printf("\nREVERSE  %u \n", face->nom);
+                        recherche_intermediaire(list_face[i], new_list, nbelem_list-1); //doit fait unn niveau au dessus 
                     }
                     if(k>0)res = res >> 1;
                 }
@@ -214,10 +242,11 @@ void recherche_intermediaire(struct carre *face, struct carre *list_face[], uint
             }
         }
     }
-
     else{
         verif_two_last_piece(face, list_face, nbelem_list);
     }
+    printf("here");
+    //exit(0);
 }
 
 
@@ -230,6 +259,9 @@ struct carre* recherche_solution(struct carre* liste_face[], uint8_t nbelem_list
         if(liste_face[z]->nom != liste_face[0]->nom){new_list[compt] = liste_face[z]; compt++;}
     
     recherche_intermediaire(liste_face[0], new_list, nbelem_list-1);
+    reverse_face(&liste_face[0]);
+    recherche_intermediaire(liste_face[0], new_list, nbelem_list-1);
+
     
     printf("\n********************il n'y a pas de solution ****************************\n");
     return 0;

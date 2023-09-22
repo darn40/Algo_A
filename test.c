@@ -80,10 +80,9 @@ int main(){
     
     carre6->line_tp = 0B00100;
     carre6->line_rt = 0B01010;
-    carre6->line_bo = 0B00110;
+    carre6->line_bo = 0B01100;
     carre6->line_lf = 0B01010;
     carre6->nom = 6;
-    
 
 
     struct carre *tab[] = {carre1, carre2, carre3, carre4, carre5, carre6};

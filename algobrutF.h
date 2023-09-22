@@ -31,6 +31,14 @@ struct carre
 typedef enum {top, right, bottom, left} bord;
 
 /**
+ * @fn reverse face
+ * @brief 
+ * 
+ * @param face 
+ */
+void reverse_face(struct carre** face);
+
+/**
  * @fn tourne carre
  * @brief tourne un carre du puzzle, redefinissant ainsi les bord,
  * le sens dans lequel on tourne n'a pas d'importance
@@ -72,7 +80,7 @@ uint8_t compatible_bo_fa(uint8_t bord, struct carre* face);
  * @param a_list 
  * @return uint8_t 
  */
-uint8_t compatible_fa_fa(uint8_t a_list[], struct carre* face);
+uint8_t compatible_fa_fa(uint8_t a_list[], struct carre** face, bool reversed);
 
 /**
  * @brief 
