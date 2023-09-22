@@ -78,7 +78,7 @@ void tourne_carre(struct carre** face, bord new_left){
 
 uint8_t compatible_bo_bo(uint8_t bord1, uint8_t bord2){ // la comapaison n'est pas bonne 
     if ((((bord1 & 0B01110) ^ (bord2 & 0B01110)) == 0b01110) 
-        && (((bord1>>4) + (bord2>>4)) <= 1) 
+        && (((bord1>>4) + (bord2>>4)) <= 1)
         && (((bord1 & 0B1) + (bord2 & 0B1)) <= 1) ) return 1; 
 
     else return 0;
@@ -112,7 +112,8 @@ uint8_t compatible_fa_fa(uint8_t a_list[], struct carre** face, bool reversed){
     // Il faut tourner la pièce si ça ne amrchera pas en général 
     // dans notre cas il 6,2 au premier(est -ce juste) if (2 eme itéraion) et échoue au 3 eme if 
     for (uint8_t i = 0; i < 4; i++){
-        tourne_carre(face,(i+3)%4);
+        uint8_t value_bord = (i+3)%4;
+        tourne_carre(face,value_bord);
         if (compatible_bo_bo((*face)->line_lf, a_list[3]) ==1 
             && compatible_bo_bo((*face)->line_bo, a_list[2]) ==1){
             
@@ -133,6 +134,12 @@ uint8_t compatible_fa_fa(uint8_t a_list[], struct carre** face, bool reversed){
                 }
             }
         }
+
+        // remise enn place du carre pour la suite 
+        if (value_bord == 0) tourne_carre(face, bottom);
+        else if (value_bord == 1) tourne_carre(face, right);
+        else if (value_bord == 2) tourne_carre(face, top);
+
     }
     if(reversed == true){
         return 0;
@@ -201,7 +208,7 @@ void verif_two_last_piece(struct carre* face, struct carre *list_two_faces[], ui
 }
 
 
-//les carrés ont un nom faire un recursif qi print les noms à la fin 
+// les carrés ont un nom faire un recursif qi print les noms à la fin 
 void recherche_intermediaire(struct carre *face, struct carre *list_face[], uint8_t nbelem_list){
     struct carre *face_copy = face;
     face_copy = face;
@@ -232,9 +239,14 @@ void recherche_intermediaire(struct carre *face, struct carre *list_face[], uint
                         /* tourner le carré si nécessaire*/
                         tourne_carre(&list_face[i], k);
                         recherche_intermediaire(list_face[i], new_list, nbelem_list-1);
-                        reverse_face(&list_face[i]);
+                        reverse_face(&list_face[i]); // renverser les faces restantes à la place
                         printf("\nREVERSE  %u \n", face->nom);
                         recherche_intermediaire(list_face[i], new_list, nbelem_list-1); //doit fait unn niveau au dessus 
+                        
+                        //remise en place du carre pour la suite 
+                        if (k == 0) tourne_carre(&list_face[i], bottom);
+                        else if (k == 1) tourne_carre(&list_face[i], right);
+                        else if (k == 2) tourne_carre(&list_face[i], top);
                     }
                     if(k>0)res = res >> 1;
                 }

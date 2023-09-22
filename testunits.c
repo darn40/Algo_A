@@ -72,6 +72,78 @@ void test_tourne_carre(struct carre *le_carre){
     affiche_carre(le_carre);
 }
 
+void test_compatible_bo_bo(){
+    printf("\n****************tests compatible bord à bord****************\n");
+    uint8_t val1 = 0b0;
+    uint8_t val2 = 0B0;
+
+    printf("\n Cas 1 :\n");
+    val1 = 0B01000;
+    printBinary(val1);
+    val2 = 0B00110;
+    printBinary(val2);
+
+    printf("resultat compatiblite :  %u",compatible_bo_bo(val1, val2));
+
+    printf("\n Cas 2 :\n");
+    val1 = 0B11010;
+    printBinary(val1);
+    val2 = 0B10101;
+    printBinary(val2);
+
+    printf("resultat compatiblite :  %u",compatible_bo_bo(val1, val2));
+    
+    printf("\n Cas 3 :\n");
+    val1 = 0B01010;
+    printBinary(val1);
+    val2 = 0B00100;
+    printBinary(val2);
+
+    printf("resultat compatiblite :  %u",compatible_bo_bo(val1, val2));
+    
+    printf("\n Cas 4 :\n");
+    val1 = 0B11010;
+    printBinary(val1);
+    val2 = 0B00101;
+    printBinary(val2);
+
+    printf("resultat compatiblite :  %u",compatible_bo_bo(val1, val2));
+    
+    printf("\n Cas 5 :\n");
+    val1 = 0B01011;
+    printBinary(val1);
+    val2 = 0B00101;
+    printBinary(val2);
+
+    printf("resultat compatiblite :  %u\n",compatible_bo_bo(val1, val2));
+    
+}
+
+void test_compatible_bo_fa(){
+    printf("\n****************tests compatible bord à face****************\n");
+    uint8_t val1 = 0b00010;
+    struct carre *carre1 = malloc(sizeof(struct carre));
+    
+    carre1->line_tp = 0B11101;
+    carre1->line_rt = 0B11101;
+    carre1->line_bo = 0B01100;
+    carre1->line_lf = 0B11100;
+    carre1->nom = 1;
+    
+    printf("resultat compatiblite cas 1:  \n");
+    printBinary(compatible_bo_fa(val1, carre1));
+
+    carre1->line_tp = 0B10111;
+    carre1->line_rt = 0B11101;
+    carre1->line_bo = 0B01100;
+    carre1->line_lf = 0B10110;
+    carre1->nom = 1;
+    
+    printf("resultat compatiblite cas 1:  \n");
+    printBinary(compatible_bo_fa(val1, carre1));
+}
+
+
 int main(){
 
     printf("Tests unitaires\n");
@@ -89,5 +161,7 @@ int main(){
 
     test_tourne_carre(carre1);
 
-    
+    test_compatible_bo_bo();
+
+    test_compatible_bo_fa();
 }
