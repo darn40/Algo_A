@@ -25,14 +25,14 @@ struct carre
 };
 
 /**
- * @brief 
+ * @brief Type enuméré pour nommés les différents bords 
  * 
  */
 typedef enum {top, right, bottom, left} bord;
 
 /**
  * @fn reverse face
- * @brief 
+ * @brief premet de renverser une pièce du puzzle 
  * 
  * @param face 
  */
@@ -49,7 +49,8 @@ void reverse_face(struct carre** face);
 void tourne_carre(struct carre** face, bord new_left);
 
 /**
- * @brief 
+ * @fn reverse bord
+ * @brief renserse le sens de lecture d'un bord
  * 
  * @param bord 
  * @return uint8_t 
@@ -57,7 +58,8 @@ void tourne_carre(struct carre** face, bord new_left);
 uint8_t reverse_bord(uint8_t bord);
 
 /**
- * @brief 
+ * @fn compatibilité entre 2 bord
+ * @brief vérifie si déux bord sont compatible ou non 
  * 
  * @param bord1 
  * @param bord2 
@@ -66,6 +68,7 @@ uint8_t reverse_bord(uint8_t bord);
 uint8_t compatible_bo_bo(uint8_t bord1, uint8_t bord2);
 
 /**
+ * @fn compatiblité entre un bord et une face
  * @brief vérifie si un bord a des compatibilité avec un carré sous forme de 4 bord de 5 bit  
  * 
  * @param bord 
@@ -75,7 +78,8 @@ uint8_t compatible_bo_bo(uint8_t bord1, uint8_t bord2);
 uint8_t compatible_bo_fa(uint8_t bord, struct carre* face);
 
 /**
- * @brief 
+ * @fn compatiblité entre face
+ * @brief vérifie un rebord de (top ou bottom ), de quatre pièces est compatibe avec une autre face
  * 
  * @param a_list 
  * @return uint8_t 
@@ -83,7 +87,8 @@ uint8_t compatible_bo_fa(uint8_t bord, struct carre* face);
 uint8_t compatible_fa_fa(uint8_t a_list[], struct carre** face, bool reversed);
 
 /**
- * @brief 
+ * @fn verifie les 2 dernières pièces
+ * @brief vérifie si les deux dernière pièces restantes peuvent être posées
  * 
  * @param face 
  * @param list_two_faces 
@@ -92,8 +97,8 @@ uint8_t compatible_fa_fa(uint8_t a_list[], struct carre** face, bool reversed);
 void verif_two_last_piece(struct carre* face, struct carre *list_two_faces[], uint8_t nbelem_list);
 
 
-//les carrés ont un nom faire un recursif qi print les noms à la fin 
 /**
+ * @fn recherche recursive 
  * @brief fonction secondaire recursive de recherche d'une solution
  * 
  * @param face la pièce considérée du puzzle
@@ -114,16 +119,16 @@ void recherche_intermediaire(struct carre *face, struct carre *list_face[], uint
 struct carre* recherche_solution(struct carre* liste_face[], uint8_t nbelem_list);
 
 /**
- * @fn
- * @brief 
+ * @fn print Binary
+ * @brief gère l'affichhage des bord sous forme de bit  
  * 
  * @param num 
  */
 void printBinary(uint8_t num);
 
 /**
- * @fn
- * @brief 
+ * @fn affiche carre
+ * @brief print les différents coté d'une pièce
  * 
  * @param le_carre 
  */
