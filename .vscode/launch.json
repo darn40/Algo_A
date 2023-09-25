@@ -27,5 +27,31 @@
                 "ignoreFailures": true
             }*/
         ]
-    }]
+        },
+        {
+            "name": "debug test unitaire",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/testunits",
+            
+            "stopAtEntry": true,
+            "cwd": "${workspaceRoot}",
+            //"environment": [],
+            //"externalConsole": true,
+            // "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Activer l'impression en mode Pretty pour gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                /*{
+                    "description": "Définir la version désassemblage sur Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }*/
+            ]
+            }
+    ]
 }
+

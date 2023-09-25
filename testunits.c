@@ -1,28 +1,6 @@
 #include <algobrutF.h>
 
 /*tests unitaires*/
-void printBinary(uint8_t num) {
-    int i;
-    for (i = sizeof(num) * 5 - 1; i >= 0; i--) {
-        if (num & (1 << i)) {
-            printf("1");
-        } else {
-            printf("0");
-        }
-    }
-    printf("\n");
-}
-
-void affiche_carre(struct carre *le_carre){
-    printf("top : ");
-    printBinary(le_carre->line_tp);
-    printf("right : ");
-    printBinary(le_carre->line_rt);
-    printf("bottom : ");
-    printBinary(le_carre->line_bo);
-    printf("left : ");
-    printBinary(le_carre->line_lf);
-}
 
 void test_renverse(struct carre *le_carre){
     printf("\n***********test renverse bord****************\n");
@@ -143,6 +121,26 @@ void test_compatible_bo_fa(){
     printBinary(compatible_bo_fa(val1, carre1));
 }
 
+void test_compatible_fa_fa(){
+    printf("\n****************tests compatible bord à face****************\n");
+    
+    struct carre *carre4 = malloc(sizeof(struct carre));
+
+    carre4->line_tp = 0B11011;
+    carre4->line_rt = 0B11011;
+    carre4->line_bo = 0B00011;
+    carre4->line_lf = 0B11100;
+    carre4->nom = 4;
+
+    uint8_t a_list[] = {0B11000, 0B00100, 0B00100, 0B01100};
+    //uint8_t a_list[] = {0B01100, 0B00100, 0B00100, 0B11000};
+
+
+    uint8_t res = compatible_fa_fa(a_list, &carre4, false);
+
+    printf("\n res = %u", res);
+}
+
 
 int main(){
 
@@ -164,4 +162,6 @@ int main(){
     test_compatible_bo_bo();
 
     test_compatible_bo_fa();
+
+    test_compatible_fa_fa();
 }

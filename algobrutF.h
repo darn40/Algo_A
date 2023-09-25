@@ -104,6 +104,7 @@ void verif_two_last_piece(struct carre* face, struct carre *list_two_faces[], ui
 void recherche_intermediaire(struct carre *face, struct carre *list_face[], uint8_t nbelem_list);
 
 /**
+ * @fn recherche solution 
  * @brief fonction principale de recherche d'une solution
  * 
  * @param list_face liste des faces pas encore placées
@@ -111,5 +112,21 @@ void recherche_intermediaire(struct carre *face, struct carre *list_face[], uint
  * @return carre* 
  */
 struct carre* recherche_solution(struct carre* liste_face[], uint8_t nbelem_list);
+
+/**
+ * @fn
+ * @brief 
+ * 
+ * @param num 
+ */
+void printBinary(uint8_t num);
+
+/**
+ * @fn
+ * @brief 
+ * 
+ * @param le_carre 
+ */
+void affiche_carre(struct carre *le_carre);
 
 #endif

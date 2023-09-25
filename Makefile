@@ -14,7 +14,9 @@ OBJS_TEST = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS_TEST))
 
 .PHONY: all clean
 
-all: $(BUILD_DIR) $(TARGET)
+all: $(BUILD_DIR) $(TARGET) $(TARGET_TEST)
+
+#exemple: $(BUILD_DIR) $(TARGET)
 
 test: $(BUILD_DIR) $(TARGET_TEST)
 
